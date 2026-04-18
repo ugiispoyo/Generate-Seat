@@ -148,5 +148,3 @@ npm run build
 Output akan di folder `dist/`
 
 ---
-
-**Version:** 1.0.0 | **Date:** April 18, 2026
