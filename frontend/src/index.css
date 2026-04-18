@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Sora:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Sora', sans-serif;
+  color: #103755;
+  background-color: #eef5fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 10% 8%, rgba(245, 182, 95, 0.24), transparent 26%),
+    radial-gradient(circle at 88% 18%, rgba(78, 166, 232, 0.24), transparent 34%),
+    linear-gradient(165deg, #f5f8fc 0%, #eef5fb 35%, #e8f1f9 100%);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer utilities {
+  .animate-rise {
+    animation: rise 0.55s ease-out both;
+  }
+
+  .animate-float {
+    animation: float 7s ease-in-out infinite;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
