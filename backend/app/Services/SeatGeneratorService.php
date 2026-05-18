@@ -36,6 +36,31 @@ class SeatGeneratorService
     }
 
     /**
+     * @param array<string> $excludedSeats
+     */
+    public function generateSingleSeat(string $aircraft, array $excludedSeats = []): string
+    {
+        $config = $this->getAircraftConfig($aircraft);
+        $attempts = 0;
+
+        while (true) {
+            $attempts++;
+
+            if ($attempts > 100) {
+                throw new RuntimeException('Unable to generate a unique seat.');
+            }
+
+            $row = random_int($config['minRow'], $config['maxRow']);
+            $letter = $config['seatLetters'][array_rand($config['seatLetters'])];
+            $seat = sprintf('%d%s', $row, $letter);
+
+            if (!in_array($seat, $excludedSeats, true)) {
+                return $seat;
+            }
+        }
+    }
+
+    /**
      * @return array{minRow:int, maxRow:int, seatLetters:array<string>}
      */
     private function getAircraftConfig(string $aircraft): array

@@ -11,6 +11,7 @@ function VoucherGeneratorPage() {
     canSubmit,
     onChangeField,
     handleGenerate,
+    handleRetry
   } = useVoucherGenerator()
 
   return (
@@ -27,7 +28,7 @@ function VoucherGeneratorPage() {
           onChangeField={onChangeField}
           onGenerate={handleGenerate}
         />
-        <SeatResultPanel seats={seats} />
+        <SeatResultPanel seats={seats} onRetry={handleRetry} />
       </section>
     </main>
   )

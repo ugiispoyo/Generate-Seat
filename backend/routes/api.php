@@ -16,3 +16,4 @@ use App\Http\Controllers\Api\VoucherController;
 
 Route::post('/check', [VoucherController::class, 'check']);
 Route::post('/generate', [VoucherController::class, 'generate']);
+Route::post('/retry', [VoucherController::class, 'retryGenerate']);

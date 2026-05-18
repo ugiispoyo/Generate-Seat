@@ -8,6 +8,8 @@ export type VoucherFormData = {
   flightNumber: string
   date: string
   aircraft: AircraftType
+  retry?: boolean
+  seat?: number
 }
 
 export type CheckVoucherPayload = {
@@ -24,5 +26,7 @@ export type CheckVoucherResponse = {
 export type GenerateVoucherResponse = {
   success: boolean
   seats?: string[]
+  seat?: string
+  seatIndex?: number
   message?: string
 }

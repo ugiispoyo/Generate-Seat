@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\CheckVoucherRequest;
 use App\Http\Requests\GenerateVoucherRequest;
+use App\Http\Requests\ReGenerateVoucherRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Voucher;
 use App\Services\SeatGeneratorService;
@@ -28,6 +29,11 @@ class VoucherController extends Controller
     {
         $flightNumber = $request->string('flightNumber')->toString();
         $flightDate = $request->date('date')->toDateString();
+        // $retry = $request->string('retry');
+
+        // if($retry) {
+        //     return $this->reGenerate($request);
+        // }
 
         $exists = Voucher::query()
             ->where('flight_number', $flightNumber)
@@ -71,6 +77,53 @@ class VoucherController extends Controller
         return response()->json([
             'success' => true,
             'seats' => $seats,
+        ]);
+    }
+
+    public function retryGenerate(ReGenerateVoucherRequest $request, SeatGeneratorService $seatGeneratorService)
+    {
+        $seatIndex = $request->integer('seat');
+        $flightNumber = $request->string('flightNumber')->toString();
+
+        $voucherQuery = Voucher::query()
+            ->where('flight_number', $flightNumber);
+
+        $voucher = $voucherQuery
+            ->latest('flight_date')
+            ->first();
+
+        if ($voucher === null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Voucher not found for this flight.',
+            ], 404);
+        }
+
+        $seatField = sprintf('seat%d', $seatIndex + 1);
+        $existingSeats = [$voucher->seat1, $voucher->seat2, $voucher->seat3];
+        $excludedSeats = array_values(array_filter(
+            $existingSeats,
+            static fn (string $seat, int $index): bool => $index !== $seatIndex,
+            ARRAY_FILTER_USE_BOTH
+        ));
+
+        try {
+            $newSeat = $seatGeneratorService->generateSingleSeat($voucher->aircraft_type, $excludedSeats);
+        } catch (RuntimeException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to regenerate seat. Please try again.',
+            ], 500);
+        }
+
+        $voucher->{$seatField} = $newSeat;
+        $voucher->save();
+
+        return response()->json([
+            'success' => true,
+            'seat' => $newSeat,
+            'seatIndex' => $seatIndex,
+            'seats' => [$voucher->seat1, $voucher->seat2, $voucher->seat3],
         ]);
     }
 }
